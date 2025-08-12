@@ -1,12 +1,12 @@
 # FP-Friendly Modern JavaScript You Can Use Today (2025)
 
-## TL;DR
-You can write clean, functional-style JavaScript in 2025 using only standard features, no Babel, no flags. With Iterator Helpers, change-by-copy, Set methods, groupBy, async pipelines, Promise.allSettled, structuredClone, and more, you can build lazy, immutable, declarative data flows straight in vanilla JS.
+> ## *TL;DR*
+> *You can write **clean, functional-style JavaScript** in 2025 using only standard features, no Babel, no flags. With **Iterator Helpers, change-by-copy, Set methods, groupBy, async pipelines, Promise.allSettled, structuredClone**, and more, you can build **lazy, immutable, declarative** data flows straight in vanilla JS.*
 
 ---
 
 ## Why "functional style" in JS?
-Functional programming (FP) favors declarative transformations, immutability, and composability. In practice, that means: map/filter/reduce pipelines, avoiding in-place mutation, and writing code that reads like data flow instead of step-by-step instructions. Recent ECMAScript releases supercharged this style.
+Functional programming (FP) favors declarative transformations, immutability, and composability. In practice, that means: **map/filter/reduce** pipelines, avoiding in-place mutation, and writing code that reads like data flow instead of step-by-step instructions. Recent ECMAScript releases supercharged this style.
 Here's what's ready and how to use it.
 
 ---
@@ -14,9 +14,9 @@ Here's what's ready and how to use it.
 ## Feature Lineup (widely adoptable)
 
 ### 1) [Iterator Helpers](https://github.com/tc39/proposal-iterator-helpers) (lazy pipelines)
-Array-like methods on iterators: .map(), .filter(), .take(), .drop(), .flatMap(), .reduce(), .some(), .every(), .toArray() and friends. Laziness means you only realize the value of something when you actually need it.
+Array-like methods on iterators: `.map()`, `.filter()`, `.take()`, `.drop()`, `.flatMap()`, `.reduce()`, `.some()`, `.every()`, `.toArray()` and friends. Laziness means you only realize the value of something when you actually need it.
 
-> **Note:** [Async Iterator Helpers](https://github.com/tc39/proposal-async-iterator-helpers) (.map(), .filter(), etc. directly on async iterators) are still in TC39 proposal stage. This is why our async examples use practical workarounds like Array.fromAsync() first, then regular Iterator Helpers.
+> **Note:** [Async Iterator Helpers](https://github.com/tc39/proposal-async-iterator-helpers) (`.map()`, `.filter()`, etc. directly on async iterators) are still in TC39 proposal stage. This is why our async examples use practical workarounds like `Array.fromAsync()` first, then regular Iterator Helpers.
 
 ```typescript
 function* range(n: number) {
@@ -33,7 +33,7 @@ const oddsSquared = range(1_000_000) // <-- no numbers generated yet
 ```
 
 ### 2) [Change Array by Copy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#copying_methods_and_mutating_methods) (immutable array ops)
-Non-mutating alternatives to classic mutators: toSorted, toReversed, toSpliced, and with.
+Non-mutating alternatives to classic mutators: `toSorted`, `toReversed`, `toSpliced`, and `with`.
 
 ```typescript
 const xs = [3, 1, 2];
@@ -43,7 +43,7 @@ const zs = xs.with(0, 99); // creates new array, replaces index 0 in the copy
 ```
 
 ### 3) [Set Methods](https://github.com/tc39/proposal-set-methods) (pure set algebra)
-Math-y, immutable-style set ops: union, intersection, difference, symmetricDifference plus relations like isSubsetOf.
+Math-y, immutable-style set ops: `union`, `intersection`, `difference`, `symmetricDifference` plus relations like `isSubsetOf`.
 
 ```typescript
 const a = new Set([1,2,3]);
@@ -119,13 +119,13 @@ copy.b.c = 99; // changes only the copy
 // original.b.c is still 2
 ```
 
-**TypeScript tip:** Add a modern lib target (e.g. "lib": ["ES2025", "DOM"]) so types for Iterator Helpers/Set Methods are available. Node 22+ and evergreen browsers ship these.
+> **TypeScript tip:** Add a modern lib target (e.g. `"lib": ["ES2025", "DOM"]`) so types for Iterator Helpers/Set Methods are available. Node 22+ and evergreen browsers ship these.
 
 ---
 
 ## A Real-World FP Pipeline (and its evolution)
 
-Below are four incremental steps that solve the same problem: take orders → derive item-level sales → rank top categories. Each step includes a plain-language change note, a short "why it matters", and a fully annotated code snippet.
+Below are **four incremental steps** that solve the same problem: take orders → derive item-level sales → rank top categories. Each step includes a **plain-language change note**, a short **"why it matters"**, and a **fully annotated code snippet**.
 
 ### Domain types used across examples
 
@@ -150,13 +150,13 @@ type Order = {
 
 ## Step 1: Synchronous, lazy pipeline
 
-Use Iterator Helpers + flatMap + groupBy + change-by-copy.
+*Use Iterator Helpers + flatMap + groupBy + change-by-copy.*
 
 ### What happens
-Get paid orders only, expand them to item-level sales, group by category, and rank, all lazily. No work happens until a terminal operation runs.
+Get paid orders only, expand them to item-level sales, group by category, and rank, all **lazily**. No work happens until a **terminal operation** runs.
 
 ### Why it matters
-You get clear, declarative dataflow with no accidental mutation. Great for moderate datasets and in-memory sources.
+You get clear, declarative dataflow with **no accidental mutation**. Great for moderate datasets and in-memory sources.
 
 ```typescript
 // TS 5.6+, Node 22+ or modern browser
@@ -220,10 +220,10 @@ console.log(top3); // e.g., [ ['tools', 9999], ['books', 4900], ['food', 1500] ]
 
 ## Step 2: Async source with Array.fromAsync (practical workaround)
 
-Process paginated async data using Array.fromAsync + sync Iterator Helpers.
+*Process paginated async data using Array.fromAsync + sync Iterator Helpers.*
 
 ### What happens
-We use Array.fromAsync() to collect async data first, then apply regular Iterator Helpers. This is the practical approach until Async Iterator Helpers ship.
+We use **Array.fromAsync()** to collect async data first, then apply **regular Iterator Helpers**. This is the practical approach until **Async Iterator Helpers** ship.
 
 ### Why it matters
 This adapts seamlessly to APIs/files/streams while keeping your code declarative. Still acceptable for moderate data sizes, and works in production today.
@@ -300,10 +300,10 @@ const top3 = byCat.entries()
 
 ## Step 3: Streaming fold (constant memory)
 
-Use streaming aggregation without intermediate arrays to achieve constant memory usage.
+*Use streaming aggregation without intermediate arrays to achieve constant memory usage.*
 
 ### What happens
-We eliminate the Array.fromAsync() and instead stream directly through the pages. Memory becomes O(number of categories), not O(number of sales).
+We **eliminate the Array.fromAsync()** and instead stream directly through the pages. Memory becomes **O(number of categories)**, not O(number of sales).
 
 ### Why it matters
 Memory becomes O(number of categories), not O(number of sales). This scales to massive datasets and even infinite streams.
@@ -387,13 +387,13 @@ const top3 = totals.entries()                 // small structure → rank
 
 ## Step 4: Rolling top-N snapshots (per page, for dashboards)
 
-Maintain a small leaderboard updated after each page.
+*Maintain a small leaderboard updated after each page.*
 
 ### What happens
-Instead of waiting for the end, we emit a snapshot after each page. We keep a running Map<category, sum> and a tiny top‑N buffer.
+Instead of waiting for the end, we **emit a snapshot** after each page. We keep a running Map<category, sum> and a tiny top‑N buffer.
 
 ### Why it matters
-Ideal for live dashboards and long-running jobs: low latency and constant memory irrespective of item count.
+Ideal for **live dashboards** and long-running jobs: low latency and **constant memory** irrespective of item count.
 
 ```typescript
 // TS 5.6+, Node 22+
@@ -517,10 +517,10 @@ console.log('WS listening on ws://localhost:8080');
 ### React client (live leaderboard)
 
 #### What happens
-A React component connects to the WebSocket server and renders the top‑N snapshot on each update, with tiny visual hints when values change.
+A React component connects to the WebSocket server and renders the **top‑N snapshot** on each update, with tiny visual hints when values change.
 
 #### Why it matters
-Shows how the FP streaming pipeline plugs into a declarative UI with no mutable shared state.
+Shows how the FP streaming pipeline plugs into a declarative UI with **no mutable shared state**.
 
 ```tsx
 // LiveTopCategories.tsx with React 18+
@@ -601,7 +601,7 @@ export default function LiveTopCategories() {
 
 ## Wrap-up
 
-You can write functional, immutable, lazy JavaScript today, no experimental flags or Babel needed. The current standard gives you everything to build clean, declarative pipelines:
+You can write **functional, immutable, lazy** JavaScript today, no experimental flags or Babel needed. The current standard gives you everything to build clean, declarative pipelines:
 
 - **Iterator Helpers + groupBy + change-by-copy** → lazy, readable, and mutation-free data flows.
 - **Set methods** → pure set algebra without side effects.
@@ -611,7 +611,7 @@ You can write functional, immutable, lazy JavaScript today, no experimental flag
 - **Streaming folds (reduce)** → constant-memory aggregation for massive datasets.
 - **Incremental snapshots** → rolling top-N dashboards or live push updates.
 
-In other words: the tools are here, the syntax is standard, and the FP-style pipelines you've been writing in libraries can now be just JavaScript/Typescript.
+In other words: the tools are here, the syntax is standard, and the FP-style pipelines you've been writing in libraries can now be **just JavaScript/Typescript**.
 
 ## Full Working Examples
 
