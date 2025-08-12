@@ -13,10 +13,12 @@ Here's what's ready and how to use it.
 
 ## Feature Lineup (widely adoptable)
 
-### 1) [Iterator Helpers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) (lazy pipelines)
-Array-like methods on iterators/async iterators: .map(), .filter(), .take(), .drop(), .flatMap(), .reduce(), .some(), .every(), .toArray() and friends. Laziness means you only realize the value of something when you actually need it.
+### 1) [Iterator Helpers](https://github.com/tc39/proposal-iterator-helpers) (lazy pipelines)
+Array-like methods on iterators: .map(), .filter(), .take(), .drop(), .flatMap(), .reduce(), .some(), .every(), .toArray() and friends. Laziness means you only realize the value of something when you actually need it.
 
-```javascript
+> **Note:** [Async Iterator Helpers](https://github.com/tc39/proposal-async-iterator-helpers) (.map(), .filter(), etc. directly on async iterators) are still in TC39 proposal stage. This is why our async examples use practical workarounds like Array.fromAsync() first, then regular Iterator Helpers.
+
+```typescript
 function* range(n: number) {
   for (let i = 0; i < n; i++) yield i; // generator is lazy by design
 }
@@ -33,7 +35,7 @@ const oddsSquared = range(1_000_000) // <-- no numbers generated yet
 ### 2) [Change Array by Copy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#copying_methods_and_mutating_methods) (immutable array ops)
 Non-mutating alternatives to classic mutators: toSorted, toReversed, toSpliced, and with.
 
-```javascript
+```typescript
 const xs = [3, 1, 2];
 const ys = xs.toSorted();  // creates new array, xs unchanged
 const zs = xs.with(0, 99); // creates new array, replaces index 0 in the copy
@@ -43,7 +45,7 @@ const zs = xs.with(0, 99); // creates new array, replaces index 0 in the copy
 ### 3) [Set Methods](https://github.com/tc39/proposal-set-methods) (pure set algebra)
 Math-y, immutable-style set ops: union, intersection, difference, symmetricDifference plus relations like isSubsetOf.
 
-```javascript
+```typescript
 const a = new Set([1,2,3]);
 const b = new Set([3,4]);
 const out = a
@@ -55,7 +57,7 @@ const out = a
 ### 4) [Object.groupBy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy) / [Map.groupBy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/groupBy)
 Declarative grouping without boilerplate loops.
 
-```javascript
+```typescript
 const users = [
   { id: 1, team: 'A' },
   { id: 2, team: 'B' },
@@ -69,7 +71,7 @@ const byTeam = Object.groupBy(users, u => u.team);
 ### 5) [Array.fromAsync](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fromAsync)
 Pulls async iterables (streams, paginated APIs) into arrays without hand-rolled loops.
 
-```javascript
+```typescript
 // readLines(url) is async iterable; nothing fetched until awaited
 const lines = await Array.fromAsync(readLines(url));
 // <-- async iteration happens here, collects all values into array
@@ -78,7 +80,7 @@ const lines = await Array.fromAsync(readLines(url));
 ### 6) [Promise.withResolvers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers)
 A small ergonomic primitive for orchestrating async flows cleanly.
 
-```javascript
+```typescript
 const { promise, resolve } = Promise.withResolvers<number>();
 // promise stays pending until resolve() is called
 setTimeout(() => resolve(42), 100); // triggers resolution
@@ -88,7 +90,7 @@ console.log(await promise); // awaits until resolved; logs 42
 ### 7) [Array.prototype.flatMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap)
 Map + flatten in one pass, perfect for pipelines that need expansion.
 
-```javascript
+```typescript
 const words = ['a b', 'c d'];
 const chars = words.flatMap(w => w.split(''));
 // flattens one level after mapping
@@ -98,7 +100,7 @@ const chars = words.flatMap(w => w.split(''));
 ### 8) [Promise.allSettled](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
 Aggregate success and failure without short-circuiting, great for parallel effects with safe collection.
 
-```javascript
+```typescript
 const results = await Promise.allSettled([
   fetch('/ok'),   // both fetches start immediately
   fetch('/fail')
@@ -110,7 +112,7 @@ const errors = results.filter(r => r.status === 'rejected');
 ### 9) [structuredClone](https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone)
 Spec-defined deep clone for structured data.
 
-```javascript
+```typescript
 const original = { a: 1, b: { c: 2 } };
 const copy = structuredClone(original); // deep copies structured data
 copy.b.c = 99; // changes only the copy
@@ -216,15 +218,15 @@ console.log(top3); // e.g., [ ['tools', 9999], ['books', 4900], ['food', 1500] ]
 
 ---
 
-## Step 2: Async source with Async Iterator Helpers
+## Step 2: Async source with Array.fromAsync (practical workaround)
 
-Process paginated async data while keeping it lazy until materialization.
+Process paginated async data using Array.fromAsync + sync Iterator Helpers.
 
 ### What happens
-We switch the source to paginated async orders and keep everything lazy; actual work happens only when we materialize once for ranking.
+We use Array.fromAsync() to collect async data first, then apply regular Iterator Helpers. This is the practical approach until Async Iterator Helpers ship.
 
 ### Why it matters
-This adapts seamlessly to APIs/files/streams while keeping your code declarative. Still acceptable for moderate data sizes.
+This adapts seamlessly to APIs/files/streams while keeping your code declarative. Still acceptable for moderate data sizes, and works in production today.
 
 ```typescript
 // TS 5.6+, Node 22+
@@ -270,6 +272,29 @@ const top3 = byCat.entries()
   .take(3)                                 // Iterator Helper method
   .toArray();                              // final materialization
 ```
+
+> **🔮 Future Syntax (when Async Iterator Helpers ship):**
+> ```typescript
+> // Direct async iterator helpers - no Array.fromAsync needed!
+> const itemSales: AsyncIterator<ItemSale> =
+>   fetchOrderPages()                         // async iterable source
+>     .flatMap(page => page.values())         // flatten pages -> orders (lazy)
+>     .filter(o => o.status === 'paid')       // lazy async filter
+>     .map(o => structuredClone(o))           // lazy async map
+>     .flatMap(o =>                           // lazy async expand
+>       o.items.values().map<ItemSale>(it => ({
+>         customerId: o.customerId,
+>         category:   it.category,
+>         total:      it.qty * it.unitPrice,
+>       }))
+>     );
+>
+> // Single materialization - directly on async iterator
+> const salesArr = await itemSales.toArray(); // **terminal**: consumes async stream
+> // ... rest stays the same
+> ```
+>
+> **Why this matters:** Pure lazy async evaluation without the Array.fromAsync collection step. The entire pipeline remains lazy until `.toArray()`.
 
 ---
 
@@ -328,6 +353,35 @@ const top3 = totals.entries()                 // small structure → rank
   .take(3)                                   // Iterator Helper method
   .toArray();                                // final materialization
 ```
+
+> **🔮 Future Syntax (when Async Iterator Helpers ship):**
+> ```typescript
+> // Direct .reduce() on async iterator - no manual for-await loop!
+> const itemSales: AsyncIterator<ItemSale> =
+>   fetchOrderPages()                         // async iterable source
+>     .flatMap(page => page.values())         // flatten pages -> orders (lazy)
+>     .filter(o => o.status === 'paid')       // lazy async filter
+>     .map(o => structuredClone(o))           // lazy async map
+>     .flatMap(o =>                           // lazy async expand
+>       o.items.values().map<ItemSale>(it => ({
+>         customerId: o.customerId,
+>         category:   it.category,
+>         total:      it.qty * it.unitPrice,
+>       }))
+>     );
+>
+> // Streaming fold directly on async iterator
+> const totals = await itemSales.reduce(        // **terminal**: consumes async stream
+>   (acc, s) => acc.set(                        // update per item as it arrives
+>     s.category,
+>     (acc.get(s.category) ?? 0) + s.total,
+>   ),
+>   new Map<LineItem['category'], number>(),
+> );
+> // ... rest stays the same
+> ```
+>
+> **Why this matters:** Pure streaming aggregation with declarative `.reduce()` instead of imperative `for await` loops. The entire async pipeline becomes a single expression.
 
 ---
 
@@ -558,3 +612,7 @@ You can write functional, immutable, lazy JavaScript today, no experimental flag
 - **Incremental snapshots** → rolling top-N dashboards or live push updates.
 
 In other words: the tools are here, the syntax is standard, and the FP-style pipelines you've been writing in libraries can now be just JavaScript/Typescript.
+
+## Full Working Examples
+
+All the code examples from this post are available as runnable TypeScript files in the [companion repository](https://github.com/cstuncsik/fp-modern-js-2025). You can clone it, run the examples, and experiment with the patterns yourself.
