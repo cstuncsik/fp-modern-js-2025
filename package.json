@@ -1,0 +1,47 @@
+{
+  "name": "fp-modern-js-2025",
+  "version": "1.0.0",
+  "description": "FP-Friendly Modern JavaScript examples from the 2025 blog post",
+  "type": "module",
+  "scripts": {
+    "step1": "tsx src/step1-sync-lazy.ts",
+    "step2": "tsx src/step2-async-source.ts",
+    "step3": "tsx src/step3-streaming-fold.ts",
+    "step4": "tsx src/step4-rolling-snapshots.ts",
+    "server": "tsx src/server.ts",
+    "client": "vite src/client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "functional-programming",
+    "javascript",
+    "typescript",
+    "iterator-helpers",
+    "modern-js",
+    "es2024",
+    "es2025"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/ws": "^8.5.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^8.2.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

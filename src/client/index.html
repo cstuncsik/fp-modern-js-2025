@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FP Modern JS 2025 - Live Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #root {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 32px;
+        min-width: 600px;
+        max-width: 800px;
+      }
+
+      h1 {
+        margin: 0 0 24px 0;
+        color: #2d3748;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .subtitle {
+        color: #718096;
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <h1>🚀 FP Modern JavaScript 2025</h1>
+      <p class="subtitle">
+        Live dashboard powered by functional streams, Iterator Helpers, and
+        WebSockets
+      </p>
+      <div id="app-container"></div>
+    </div>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>
