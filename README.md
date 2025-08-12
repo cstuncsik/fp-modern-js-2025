@@ -88,6 +88,7 @@ src/
 │   ├── main.tsx               # React app setup
 │   └── LiveTopCategories.tsx  # Dashboard component
 └── shared/
+    └── data.ts                # Mock data
     └── types.ts               # Domain types
 ```
 
