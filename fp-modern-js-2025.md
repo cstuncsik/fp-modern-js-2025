@@ -303,7 +303,7 @@ const top3 = byCat.entries()
 *Use streaming aggregation without intermediate arrays to achieve constant memory usage.*
 
 ### What happens
-We **eliminate the Array.fromAsync()** and instead stream directly through the pages. Memory becomes **O(number of categories)**, not O(number of sales).
+We **eliminate the Array.fromAsync()** and instead stream directly through the pages.
 
 ### Why it matters
 Memory becomes O(number of categories), not O(number of sales). This scales to massive datasets and even infinite streams.
