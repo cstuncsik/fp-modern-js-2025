@@ -1,6 +1,6 @@
 # FP-Friendly Modern JavaScript (2025)
 
-Working examples from the blog post: **"FP-Friendly Modern JavaScript You Can Use Today (2025)"**
+Working examples from my article at Medium: [**"FP-Friendly Modern JavaScript You Can Use Today (2025)"**](https://medium.com/@cstuncsik/fp-friendly-modern-javascript-you-can-use-today-2025-0a9471ef9df6)
 
 This repository demonstrates how to write clean, functional-style JavaScript using only standard ES2024+ features - no Babel, no flags, no external FP libraries.
 
